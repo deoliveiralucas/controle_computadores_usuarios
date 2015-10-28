@@ -1,0 +1,300 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                template="/template/template.xhtml">
+    <ui:define name="titulo">Pós Graduação Web e Mobile 2015</ui:define>              
+    <ui:define name="conteudo">  
+
+        <br/>
+        <div class="container" style="margin: auto">
+            <a href="#{facesContext.externalContext.requestContextPath}/j_spring_security_logout" 
+               class="btn btn-sm btn-primary" type="button" value="Sair" style="width: 80px; margin-left: 15px;">
+                Sair
+            </a>
+            <br /><br />
+
+            <div class="container" ng-app="computerApp">
+                <div id="content">
+                    <ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
+                        <li class="active"><a href="#chamados" data-toggle="tab">Chamados</a></li>
+                        <li><a href="#computadores" data-toggle="tab">Computadores</a></li>
+                        <li><a href="#usuarios" data-toggle="tab">Usuarios</a></li>
+                    </ul>
+
+                    <!-- ABA CHAMADOS -->
+                    <div id="my-tab-content" class="tab-content">
+                        <div class="tab-pane active" id="chamados" ng-controller="computerController">
+                            <h1>Chamados</h1>
+                            <p>
+                                <table id="tabelaAngular"
+                                       class="table table-striped table-bordered table-responsive"
+                                       cellspacing="0" width="100%">
+                                    <thead>
+                                        <tr>
+                                            <th>Computador</th>
+                                            <th>Usuário</th>
+                                            <th>Área</th>
+                                            <th>Descrição</th>
+                                            <th>Abertura</th>
+                                            <th>Status</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="u in usersSupport">
+                                            <td>{{ u.computerId.name}}</td>
+                                            <td>{{ u.userId.name}}</td>
+                                            <td>{{ u.userId.area}}</td>
+                                            <td>{{ u.description}}</td>
+                                            <td>{{ u.insertedAt | date:'dd/MM/yyyy' }}</td>
+                                            <td ng-if="u.status == 1">
+                                                Pendente
+                                            </td>
+                                            <td ng-if="u.status != 1" colspan="2">
+                                                Atendido
+                                            </td>
+                                            <td ng-if="u.status == 1">
+                                                <p>
+                                                    <a ng-click="finalizar(u)" href="#" class="btn btn-primary btn-small">
+                                                        Finalizar
+                                                    </a>
+                                                </p>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </p>
+                        </div>
+
+                        <!-- ABA COMPUTADORES -->
+                        <div class="tab-pane" id="computadores">
+                            <h1>Computadores</h1>
+                            <p>
+                                <div align="center">
+                                    <h:form id="formComputadores" style="text-align: center">
+                                        <p:dataTable var="lista" value="#{computerBean.computers}"
+                                                     id="tabelaComputadores" style="margin: auto;">
+                                            <f:facet name="header">Computadores</f:facet>
+                                            <p:column headerText="Nome">
+                                                <h:outputText value="#{lista.name}" />
+                                            </p:column>
+                                            <p:column headerText="HD">
+                                                <h:outputText value="#{lista.hardDisk}" />
+                                            </p:column>
+                                            <p:column headerText="Placa Mãe">
+                                                <h:outputText value="#{lista.motherboard}" />
+                                            </p:column>
+                                            <p:column headerText="Memória RAM">
+                                                <h:outputText value="#{lista.memoryRam}" />
+                                            </p:column>
+                                            <p:column headerText="S.O">
+                                                <h:outputText value="#{lista.operationalSystem}" />
+                                            </p:column>
+                                            <p:column headerText="Processador">
+                                                <h:outputText value="#{lista.processor}" />
+                                            </p:column>
+                                            <p:column headerText="USB Habilitado">
+                                                <h:outputText value="#{lista.usbEnable ? 'S' : 'N'}" />
+                                            </p:column>
+                                            <p:column headerText="Ações">
+                                                <p:commandLink title="Alterar" update=":formAlterar:Alterar"
+                                                               oncomplete="PF('dialogAlterar').show()" immediate="true">
+                                                    <h:graphicImage library="img" name="edit.png" />
+                                                    <f:setPropertyActionListener target="#{computerBean.computer}"
+                                                                                 value="#{lista}" />
+                                                </p:commandLink>
+                                                <p:commandLink title="Excluir" update=":formExcluir:Excluir"
+                                                               oncomplete="PF('confirmation').show()" immediate="true">
+                                                    <h:graphicImage library="img" name="remove.png" />
+                                                    <f:setPropertyActionListener target="#{computerBean.computer}"
+                                                                                 value="#{lista}" />
+                                                </p:commandLink>
+                                            </p:column>
+                                        </p:dataTable><br/>
+                                        <p:commandButton value="Cadastrar" id="cadastrar" oncomplete="PF('dialogCadastrar').show()" />
+                                    </h:form>
+                                </div>
+
+                                <h:form id="formAlterar">
+                                    <p:dialog header="Alterar" widgetVar="dialogAlterar" modal="true"
+                                              id="Alterar">
+                                        <p:panelGrid id="panelAlterar" columns="2">
+                                            <h:outputText value="Nome:" />
+                                            <p:inputText value="#{computerBean.computer.name}" />
+                                            <h:outputText value="HD:" />
+                                            <p:inputText value="#{computerBean.computer.hardDisk}" />
+                                            <h:outputText value="Placa Mãe:" />
+                                            <p:inputText value="#{computerBean.computer.motherboard}" />
+                                            <h:outputText value="Memória RAM:" />
+                                            <p:inputText value="#{computerBean.computer.memoryRam}" />
+                                            <h:outputText value="S.O:" />
+                                            <p:inputText value="#{computerBean.computer.operationalSystem}" />
+                                            <h:outputText value="Processador:" />
+                                            <p:inputText value="#{computerBean.computer.processor}" />
+                                            <h:outputText value="USB Habilitado:" />
+                                            <p:selectOneMenu id="console" value="#{computerBean.computer.usbEnable}">
+                                                <f:selectItem itemLabel="Sim" itemValue="true" />
+                                                <f:selectItem itemLabel="Não" itemValue="false" />
+                                            </p:selectOneMenu>
+                                        </p:panelGrid><br/>
+                                        <p:commandButton value="Alterar"
+                                                         actionListener="#{computerBean.alterar}"
+                                                         update=":formComputadores:tabelaComputadores"
+                                                         oncomplete="PF('dialogAlterar').hide()" />
+                                    </p:dialog>
+                                </h:form>
+
+                                <h:form id="formCadastrar">
+                                    <p:dialog header="Cadastrar" widgetVar="dialogCadastrar" modal="true">
+                                        <p:panelGrid id="panelCadastrar" columns="2">
+                                            <h:outputText value="Nome:" />
+                                            <p:inputText value="#{computerBean.computer.name}" />
+                                            <h:outputText value="HD:" />
+                                            <p:inputText value="#{computerBean.computer.hardDisk}" />
+                                            <h:outputText value="Placa Mãe:" />
+                                            <p:inputText value="#{computerBean.computer.motherboard}" />
+                                            <h:outputText value="Memória RAM:" />
+                                            <p:inputText value="#{computerBean.computer.memoryRam}" />
+                                            <h:outputText value="S.O:" />
+                                            <p:inputText value="#{computerBean.computer.operationalSystem}" />
+                                            <h:outputText value="Processador:" />
+                                            <p:inputText value="#{computerBean.computer.processor}" />
+                                            <h:outputText value="USB Habilitado:" />
+                                            <p:selectOneMenu id="console" value="#{computerBean.computer.usbEnable}" style="width: 150px;">
+                                                <f:selectItem itemLabel="Sim" itemValue="true" />
+                                                <f:selectItem itemLabel="Não" itemValue="false" />
+                                            </p:selectOneMenu>
+                                        </p:panelGrid><br/>
+                                        <p:commandButton value="Cadastrar"
+                                                         actionListener="#{computerBean.cadastrar}"
+                                                         update=":formComputadores:tabelaComputadores"
+                                                         oncomplete="PF('dialogCadastrar').hide()" />
+                                    </p:dialog>
+                                </h:form>
+
+                                <h:form id="formExcluir">
+                                    <p:confirmDialog id="Excluir"
+                                                     message="Tem certeza que deseja deletar o #{computerBean.computer.name}?"
+                                                     header="Excluir" severity="alert" widgetVar="confirmation">
+
+                                        <p:commandButton id="confirm" value="Sim"
+                                                         oncomplete="PF('confirmation').hide()"
+                                                         actionListener="#{computerBean.excluir}"
+                                                         update=":formComputadores:tabelaComputadores" />
+
+                                        <p:commandButton id="decline" value="Não"
+                                                         onclick="PF('confirmation').hide()" type="button" />
+
+                                    </p:confirmDialog>
+                                </h:form>
+                            </p>
+                        </div>
+
+                        <!-- ABA USUÁRIOS -->
+                        <div class="tab-pane" id="usuarios">
+                            <h1>Usuários</h1>
+                            <p>
+                                <h:form id="formUsuarios" style="text-align: center">
+                                    <p:dataTable var="lista" value="#{computerUserBean.computerUsers}"
+                                                 id="tabelaUsuarios" style="margin: auto;">
+                                        <f:facet name="header">Usuários</f:facet>
+                                        <p:column headerText="Nome">
+                                            <h:outputText value="#{lista.name}" />
+                                        </p:column>
+                                        <p:column headerText="Area">
+                                            <h:outputText value="#{lista.area}" />
+                                        </p:column>
+                                        <p:column headerText="E-mail">
+                                            <h:outputText value="#{lista.mail}" />
+                                        </p:column>
+                                        <p:column headerText="Telefone">
+                                            <h:outputText value="#{lista.phone}" />
+                                        </p:column>
+                                        <p:column headerText="Ações">
+                                            <p:commandLink title="Alterar" update=":formAlterarUsuario:AlterarUsuario"
+                                                           oncomplete="PF('dialogAlterarUsuario').show()" immediate="true">
+                                                <h:graphicImage library="img" name="edit.png" />
+                                                <f:setPropertyActionListener target="#{computerUserBean.computerUser}" value="#{lista}" />
+                                            </p:commandLink>
+
+                                            <p:commandLink title="Excluir" update=":formExcluirUsuario:ExcluirUsuario"
+                                                           oncomplete="PF('confirmation').show()" immediate="true">
+
+                                                <h:graphicImage library="img" name="remove.png" />
+                                                <f:setPropertyActionListener target="#{computerUserBean.computerUser}" value="#{lista}" />
+
+                                            </p:commandLink>
+                                        </p:column>
+                                    </p:dataTable><br/>
+                                    <p:commandButton value="Cadastrar" id="cadastrarUsuario" oncomplete="PF('dialogCadastrarUsuario').show()" />
+                                </h:form>
+
+                                <h:form id="formAlterarUsuario">
+                                    <p:dialog header="Alterar" widgetVar="dialogAlterarUsuario" modal="true"
+                                              id="AlterarUsuario">
+                                        <p:panelGrid id="panelAlterarUsuario" columns="2">
+                                            <h:outputText value="Nome:" />
+                                            <p:inputText value="#{computerUserBean.computerUser.name}" />
+                                            <h:outputText value="Area:" />
+                                            <p:inputText value="#{computerUserBean.computerUser.area}" />
+                                            <h:outputText value="E-mail:" />
+                                            <p:inputText value="#{computerUserBean.computerUser.mail}" />
+                                            <h:outputText value="Telefone:" />
+                                            <p:inputText value="#{computerUserBean.computerUser.phone}" />
+                                        </p:panelGrid><br/>
+                                        <p:commandButton value="Alterar"
+                                                         actionListener="#{computerUserBean.alterar}"
+                                                         update=":formUsuarios:tabelaUsuarios"
+                                                         oncomplete="PF('dialogAlterarUsuario').hide()" />
+                                    </p:dialog>
+                                </h:form>
+
+                                <h:form id="formCadastrarUsuario">
+                                    <p:dialog header="Cadastrar" widgetVar="dialogCadastrarUsuario" modal="true">
+                                        <p:panelGrid id="panelCadastrarUsuario" columns="2">
+                                            <h:outputText value="Nome:" />
+                                            <p:inputText value="#{computerUserBean.computerUser.name}" />
+                                            <h:outputText value="Area:" />
+                                            <p:inputText value="#{computerUserBean.computerUser.area}" />
+                                            <h:outputText value="E-mail:" />
+                                            <p:inputText value="#{computerUserBean.computerUser.mail}" />
+                                            <h:outputText value="Telefone:" />
+                                            <p:inputText value="#{computerUserBean.computerUser.phone}" />
+                                        </p:panelGrid><br/>
+                                        <p:commandButton value="Cadastrar"
+                                                         actionListener="#{computerUserBean.cadastrar}"
+                                                         update=":formUsuarios:tabelaUsuarios"
+                                                         oncomplete="PF('dialogCadastrarUsuario').hide()" />
+                                    </p:dialog>
+                                </h:form>
+
+                                <h:form id="formExcluirUsuario">
+                                    <p:confirmDialog id="ExcluirUsuario"
+                                                     message="Tem certeza que deseja deletar o #{computerUserBean.computerUser.name}?"
+                                                     header="Excluir" severity="alert" widgetVar="confirmation">
+
+                                        <p:commandButton id="confirm" value="Sim"
+                                                         oncomplete="PF('confirmation').hide()"
+                                                         actionListener="#{computerUserBean.excluir}"
+                                                         update=":formUsuarios:tabelaUsuarios" />
+
+                                        <p:commandButton id="decline" value="Não"
+                                                         onclick="PF('confirmation').hide()" type="button" />
+
+                                    </p:confirmDialog>
+                                </h:form>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <script type="text/javascript">
+                    jQuery(document).ready(function ($) {
+                        $('#tabs').tab();
+                    });
+                </script>
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>
