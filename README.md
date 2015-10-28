@@ -3,7 +3,7 @@ Gerenciamento de computadores, usuários e chamados.
 Pós UNISAL
 Módulo Java
 
-## INSTALAÇÃO ##
+## Instalação ##
 ```
 $ git clone https://github.com/deoliveiralucas/controle_computadores_usuarios.git
 ```
